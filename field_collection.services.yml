@@ -18,6 +18,6 @@ services:
 
   field_collection.normalizer.field_collection_item:
     class: Drupal\field_collection\Normalizer\FieldCollectionItemNormalizer
-    arguments: ['@entity.manager']
+    arguments: ['@entity_type.manager']
     tags:
       - { name: normalizer }
