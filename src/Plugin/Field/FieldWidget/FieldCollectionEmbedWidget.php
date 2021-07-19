@@ -60,7 +60,7 @@ class FieldCollectionEmbedWidget extends WidgetBase {
 
     static::setWidgetState($element['#field_parents'], $field_name, $form_state, $field_state);
 
-    $display = entity_get_form_display('field_collection_item', $field_name, 'default');
+    $display = \Drupal::service('entity_display.repository')->getFormDisplay('field_collection_item', $field_name);
     $display->buildForm($field_collection_item, $element, $form_state);
 
     if (empty($element['#required'])) {
@@ -180,7 +180,7 @@ class FieldCollectionEmbedWidget extends WidgetBase {
 
     $field_collection_item = $field_state['field_collection_item'][$element['#delta']];
 
-    $display = entity_get_form_display('field_collection_item', $field_name, 'default');
+    $display = \Drupal::service('entity_display.repository')->getFormDisplay('field_collection_item', $field_name);
     $display->extractFormValues($field_collection_item, $element, $form_state);
 
     // Now validate required elements if the entity is not empty.
