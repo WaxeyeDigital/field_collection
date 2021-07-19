@@ -6,6 +6,8 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\field_collection\Entity\FieldCollection;
 use Drupal\field_collection\Entity\FieldCollectionItem;
 use Drupal\Core\Entity\Controller\EntityViewController;
+use Drupal\Core\Messenger\MessengerInterface;
+
 
 /**
  * Returns responses for Field collection item routes.
@@ -32,7 +34,7 @@ class FieldCollectionItemController extends ControllerBase {
   public function add(FieldCollection $field_collection, $host_type, $host_id) {
     $host = $this->entityTypeManager()->getStorage($host_type)->load($host_id);
     if (_field_collection_field_item_list_full($host->{$field_collection->id()})) {
-      drupal_set_message(t('This field is already full.'), 'error');
+      MessengerInterface::addMessage(t('This field is already full.'), 'error');
       return ['#markup' => 'Can not add to an already full field.'];
     }
     else {

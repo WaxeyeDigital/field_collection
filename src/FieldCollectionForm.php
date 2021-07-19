@@ -5,6 +5,7 @@ namespace Drupal\field_collection;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Messenger\MessengerInterface;
 
 /**
  * Form controller for field collection forms.
@@ -23,7 +24,7 @@ class FieldCollectionForm extends EntityForm {
       // There should be no way to attempt to add a field collection through
       // this form but set up a message for it just in case.
       $form['#title'] = $this->t('Add field collection');
-      drupal_set_message(t('To add a field collection create a field of type field collection on the host entity type.'));
+      MessengerInterface::addMessage(t('To add a field collection create a field of type field collection on the host entity type.'));
     }
     else {
       $form['#title'] = $this->t('Edit %label field collection', ['%label' => $field_collection->label()]);

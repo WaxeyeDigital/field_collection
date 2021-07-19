@@ -4,6 +4,7 @@ namespace Drupal\field_collection\Form;
 
 use Drupal\Core\Entity\ContentEntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 
 /**
  * Provides a form for deleting a field collection item.
@@ -49,7 +50,7 @@ class FieldCollectionItemDeleteForm extends ContentEntityConfirmFormBase {
     $node_type_storage = $this->entityTypeManager->getStorage('field_collection');
     $node_type = $node_type_storage->load($this->entity->bundle())->label();
 
-    drupal_set_message(t(
+    MessengerInterface::addMessage(t(
       '@type %id has been deleted.',
       [
         '@type' => $node_type,

@@ -7,6 +7,7 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\field_collection\FieldCollectionItemInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 
 /**
  * Defines the field collection item entity class.
@@ -309,7 +310,7 @@ class FieldCollectionItem extends ContentEntityBase implements FieldCollectionIt
       // Add the field collection item to its host.
       if ($create_link) {
         if (_field_collection_field_item_list_full($entity->{$this->bundle()})) {
-          drupal_set_message(t('Field is already full.'), 'error');
+          MessengerInterface::addMessage(t('Field is already full.'), 'error');
         }
         else {
           $entity->{$this->bundle()}[] = ['field_collection_item' => $this];

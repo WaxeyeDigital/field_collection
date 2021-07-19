@@ -4,6 +4,7 @@ namespace Drupal\field_collection;
 
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 
 class FieldCollectionItemForm extends ContentEntityForm {
 
@@ -84,16 +85,16 @@ class FieldCollectionItemForm extends ContentEntityForm {
       $field_collection_item->save();
       $host->save();
 
-      $messages = drupal_get_messages(NULL, false);
+      $messages = MessengerInterface::all();
       if (!isset($messages['warning']) && !isset($messages['error'])) {
-        drupal_set_message(t('Successfully added a @type.', ['@type' => $field_collection_item->bundle()]));
+        MessengerInterface::addMessage(t('Successfully added a @type.', ['@type' => $field_collection_item->bundle()]));
       }
     }
     else {
-      $messages = drupal_get_messages(NULL, false);
+      $messages = MessengerInterface::all();
       if (!isset($messages['warning']) && !isset($messages['error'])) {
         $field_collection_item->save();
-        drupal_set_message(t('Successfully edited %label.', ['%label' => $field_collection_item->label()]));
+        MessengerInterface::addMessage(t('Successfully edited %label.', ['%label' => $field_collection_item->label()]));
       }
     }
 
@@ -104,7 +105,7 @@ class FieldCollectionItemForm extends ContentEntityForm {
     else {
       // In the unlikely case something went wrong on save, the block will be
       // rebuilt and block form redisplayed.
-      drupal_set_message(t('The field collection item could not be saved.'), 'error');
+      MessengerInterface::addMessage(t('The field collection item could not be saved.'), 'error');
 
       $form_state->setRebuild();
     }
