@@ -8,7 +8,7 @@ use Drupal\Core\Security\TrustedCallbackInterface;
  * Class FieldCollectionEmbedWidgetBuilder
  * @package Drupal\field_collection
  */
-class FieldCollectionEmbedWidgetBuilder extends TrustedCallbackInterface
+class FieldCollectionEmbedWidgetBuilder implements TrustedCallbackInterface
 {
     /**
      * @return string[]
