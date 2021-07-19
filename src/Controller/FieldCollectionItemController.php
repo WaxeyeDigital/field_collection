@@ -46,8 +46,7 @@ class FieldCollectionItemController extends ControllerBase {
           'revision_id' => 0,
         ]);
 
-      $form = $this->entityFormBuilder()->getForm($field_collection_item);
-      return $form;
+      return $this->entityFormBuilder()->getForm($field_collection_item);
     }
   }
 
