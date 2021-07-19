@@ -11,6 +11,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Render\Element;
 use Drupal\field_collection\Entity\FieldCollectionItem;
+use Drupal\field_collection\FieldCollectionEmbedWidgetBuilder;
 
 /**
  * Plugin implementation of the 'field_collection_embed' widget.
@@ -157,16 +158,8 @@ class FieldCollectionEmbedWidget extends WidgetBase {
       $element['#required'] = FALSE;
       $required_elements[] = &$element;
       $element += ['#pre_render' => []];
-      array_unshift($element['#pre_render'], [static::class, 'renderRequired']);
+      array_unshift($element['#pre_render'], [FieldCollectionEmbedWidgetBuilder::class, 'preRender']);
     }
-  }
-
-  /**
-   * #pre_render callback ensures the element is rendered as being required.
-   */
-  public static function renderRequired($element) {
-    $element['#required'] = TRUE;
-    return $element;
   }
 
   /**
