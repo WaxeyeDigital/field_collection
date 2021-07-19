@@ -28,6 +28,7 @@ class DuplicateFieldCollectionTest extends KernelTestBase {
 
   /**
    * Ensures field_collection_field_storage_config_insert() works correctly.
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function testDuplicateFieldCollection() {
     $values = [

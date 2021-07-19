@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\field_collection\FunctionalJavascriptTests;
 
-use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
+use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\field_collection\Functional\FieldCollectionTestTrait;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
@@ -12,7 +12,7 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
  *
  * @group Ajax
  */
-class FieldCollectionAJAXTest extends JavascriptTestBase {
+class FieldCollectionAJAXTest extends WebDriverTestBase {
   use FieldCollectionTestTrait;
 
   /**
@@ -34,6 +34,8 @@ class FieldCollectionAJAXTest extends JavascriptTestBase {
    * Tests how Field Collections manage empty fields.
    *
    * @see \Drupal\field_collection\Plugin\Field\FieldWidget\FieldCollectionEmbedWidget::formMultipleElements()
+   * @throws \Behat\Mink\Exception\ElementNotFoundException
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function testEmptyFields() {
     $user_privileged = $this->drupalCreateUser([
@@ -50,7 +52,7 @@ class FieldCollectionAJAXTest extends JavascriptTestBase {
 
     // Check that we can see field collection fields when creating content.
     $this->drupalGet('node/add/article');
-    $this->assertFieldById('edit-field-test-collection-0-field-inner-0-value');
+    $this->assertField('edit-field-test-collection-0-field-inner-0-value');
 
     // Check that the "Add another item" button works as expected.
     //$this->drupalPostAjaxForm('node/add/article', [], ['field_test_collection_add_more' => t('Add another item')]);
@@ -63,7 +65,7 @@ class FieldCollectionAJAXTest extends JavascriptTestBase {
     // that did not have values for it.
     $node = $this->drupalCreateNode(['type' => 'article']);
     $this->drupalGet('node/' . $node->id() . '/edit');
-    $this->assertFieldById('edit-field-test-collection-0-field-inner-0-value');
+    $this->assertField('edit-field-test-collection-0-field-inner-0-value');
   }
 
 }

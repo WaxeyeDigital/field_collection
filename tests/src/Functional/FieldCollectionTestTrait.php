@@ -55,6 +55,10 @@ trait FieldCollectionTestTrait {
 
   /**
    * Sets up the data structures for the tests.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   private function setUpFieldCollectionTest() {
     $this->nodeStorage = \Drupal::entityTypeManager()->getStorage('node');
@@ -103,17 +107,23 @@ trait FieldCollectionTestTrait {
 
     $inner_field->save();
 
-    entity_get_form_display('field_collection_item', $this->field_collection_name, 'default')
+    \Drupal::service('entity_display.repository')->getFormDisplay('field_collection_item', $this->field_collection_name)
       ->setComponent($this->inner_field_name, ['type' => 'number'])
       ->save();
 
-    entity_get_display('field_collection_item', $this->field_collection_name, 'default')
+    \Drupal::service('entity_display.repository')->getViewDisplay('field_collection_item', $this->field_collection_name)
       ->setComponent($this->inner_field_name, ['type' => 'number_decimal'])
       ->save();
   }
 
   /**
    * Helper function for adding the field collection field to a content type.
+   *
+   * @param $content_type
+   * @return \Drupal\Core\Entity\EntityBase|\Drupal\Core\Entity\EntityInterface|FieldConfig
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   protected function addFieldCollectionFieldToContentType($content_type) {
     $field_collection_definition = [
@@ -147,6 +157,11 @@ trait FieldCollectionTestTrait {
 
   /**
    * Helper for creating a new node with a field collection item.
+   *
+   * @param $content_type
+   * @return array
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Drupal\Core\TypedData\Exception\ReadOnlyException
    */
   protected function createNodeWithFieldCollection($content_type) {
     $node = $this->drupalCreateNode(['type' => $content_type]);

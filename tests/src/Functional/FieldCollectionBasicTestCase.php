@@ -37,15 +37,18 @@ class FieldCollectionBasicTestCase extends BrowserTestBase {
 
   /**
    * Tests CRUD.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Drupal\Core\TypedData\Exception\ReadOnlyException
    */
   public function testCRUD() {
     /** @var \Drupal\node\NodeInterface $node */
     /** @var \Drupal\field_collection\FieldCollectionItemInterface $field_collection_item */
     list ($node, $field_collection_item) = $this->createNodeWithFieldCollection('article');
 
-    $this->assertEqual($field_collection_item->id(), $node->{$this->field_collection_name}->value, 'A field_collection_item has been successfully created and referenced.');
+    $this->assertEquals($node->{$this->field_collection_name}->value, $field_collection_item->id(), 'A field_collection_item has been successfully created and referenced.');
 
-    $this->assertEqual($field_collection_item->revision_id->value, $node->{$this->field_collection_name}->revision_id, 'The new field_collection_item has the correct revision.');
+    $this->assertEquals($node->{$this->field_collection_name}->revision_id, $field_collection_item->revision_id->value, 'The new field_collection_item has the correct revision.');
 
     // Test adding an additional field_collection_item.
     $field_collection_item_2 = FieldCollectionItem::create(['field_name' => $this->field_collection_name]);
@@ -60,15 +63,15 @@ class FieldCollectionBasicTestCase extends BrowserTestBase {
 
     $this->assertTrue(!empty($field_collection_item_2->id()) && !empty($field_collection_item_2->getRevisionId()), 'Another field_collection_item has been saved.');
 
-    $this->assertEqual(count(FieldCollectionItem::loadMultiple()), 2, 'Field_collection_items have been stored.');
+    $this->assertEquals(2, count(FieldCollectionItem::loadMultiple()), 'Field_collection_items have been stored.');
 
-    $this->assertEqual($field_collection_item->id(), $node->{$this->field_collection_name}->value, 'Existing reference has been kept during update.');
+    $this->assertEquals($node->{$this->field_collection_name}->value, $field_collection_item->id(), 'Existing reference has been kept during update.');
 
-    $this->assertEqual($field_collection_item->getRevisionId(), $node->{$this->field_collection_name}[0]->revision_id, 'Revision: Existing reference has been kept during update.');
+    $this->assertEquals($node->{$this->field_collection_name}[0]->revision_id, $field_collection_item->getRevisionId(), 'Revision: Existing reference has been kept during update.');
 
-    $this->assertEqual($field_collection_item_2->id(), $node->{$this->field_collection_name}[1]->value, 'New field_collection_item has been properly referenced.');
+    $this->assertEquals($node->{$this->field_collection_name}[1]->value, $field_collection_item_2->id(), 'New field_collection_item has been properly referenced.');
 
-    $this->assertEqual($field_collection_item_2->getRevisionId(), $node->{$this->field_collection_name}[1]->revision_id, 'Revision: New field_collection_item has been properly referenced.');
+    $this->assertEquals($node->{$this->field_collection_name}[1]->revision_id, $field_collection_item_2->getRevisionId(), 'Revision: New field_collection_item has been properly referenced.');
 
     // Make sure deleting the field collection item removes the reference.
     $field_collection_item_2->delete();
@@ -80,7 +83,7 @@ class FieldCollectionBasicTestCase extends BrowserTestBase {
     // Make sure field_collections are removed during deletion of the host.
     $node->delete();
 
-    $this->assertIdentical(FieldCollectionItem::loadMultiple(), [], 'field_collection_item deleted when the host is deleted.');
+    $this->assertSame([], FieldCollectionItem::loadMultiple(), 'field_collection_item deleted when the host is deleted.');
 
     // Try deleting nodes with collections without any values.
     $node = $this->drupalCreateNode(['type' => 'article']);
@@ -123,6 +126,8 @@ class FieldCollectionBasicTestCase extends BrowserTestBase {
 
   /**
    * Test deleting the field corresponding to a field collection.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function testFieldDeletion() {
     // Create a separate content type with the field collection field.
@@ -160,6 +165,10 @@ class FieldCollectionBasicTestCase extends BrowserTestBase {
 
   /**
    * Make sure the basic UI and access checks are working.
+   *
+   * @throws \Behat\Mink\Exception\ExpectationException
+   * @throws \Behat\Mink\Exception\ResponseTextException
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function testBasicUI() {
     $node = $this->drupalCreateNode(['type' => 'article']);
@@ -172,7 +181,7 @@ class FieldCollectionBasicTestCase extends BrowserTestBase {
     $path = "field_collection_item/add/field_test_collection/node/{$node->id()}";
 
     $this->drupalGet($path);
-    $this->assertText(t('Access denied'), 'Access has been denied.');
+    $this->assertSession()->pageTextContains(t('Access denied'), 'Access has been denied.');
 
     // Login with new user that has basic edit rights.
     $user_privileged = $this->drupalCreateUser([
@@ -185,31 +194,30 @@ class FieldCollectionBasicTestCase extends BrowserTestBase {
     // Test field collection item add form.
     $this->drupalGet('admin/structure/types/manage/article/display');
     $this->drupalGet("node/{$node->id()}");
-    $this->assertLinkByHref($path, 0, 'Add link is shown.');
+    $this->assertSession()->linkByHrefExists($path, 0, 'Add link is shown.');
     $this->drupalGet($path);
 
-    $this->assertText(t($this->inner_field_definition['label']), 'Add form is shown.');
-
+    $this->assertSession()->pageTextContains(t($this->inner_field_definition['label']));
     $edit = ["$this->inner_field_name[0][value]" => rand()];
-    $this->drupalPostForm(NULL, $edit, t('Save'));
+    $this->submitForm($edit, t('Save'));
 
-    $this->assertText(t('Successfully added a @field.', ['@field' => $this->field_collection_name]), 'Field collection saved.');
+    $this->assertSession()->pageTextContains(t('Successfully added a @field.', ['@field' => $this->field_collection_name]));
 
-    $this->assertText($edit["$this->inner_field_name[0][value]"], 'Added field value is shown.');
+    $this->assertSession()->pageTextContains($edit["$this->inner_field_name[0][value]"]);
 
     $field_collection_item = FieldCollectionItem::load(1);
 
     // Test field collection item edit form.
     $edit["$this->inner_field_name[0][value]"] = rand();
-    $this->drupalPostForm('field_collection_item/1/edit', $edit, t('Save'));
+    $this->submitForm($edit, t('Save'));
 
-    $this->assertText(t('Successfully edited @field.', ['@field' => $field_collection_item->label()]), 'Field collection saved.');
+    $this->assertSession()->pageTextContains(t('Successfully edited @field.', ['@field' => $field_collection_item->label()]));
 
-    $this->assertText($edit["$this->inner_field_name[0][value]"], 'Field collection has been edited.');
+    $this->assertSession()->pageTextContains($edit["$this->inner_field_name[0][value]"]);
 
     $this->drupalGet('field_collection_item/1');
 
-    $this->assertText($edit["$this->inner_field_name[0][value]"], 'Field collection can be viewed.');
+    $this->assertSession()->pageTextContains($edit["$this->inner_field_name[0][value]"]);
   }
 
 }
