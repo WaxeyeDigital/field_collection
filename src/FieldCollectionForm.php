@@ -24,7 +24,7 @@ class FieldCollectionForm extends EntityForm {
       // There should be no way to attempt to add a field collection through
       // this form but set up a message for it just in case.
       $form['#title'] = $this->t('Add field collection');
-      MessengerInterface::addMessage(t('To add a field collection create a field of type field collection on the host entity type.'));
+      \Drupal::messenger()->addMessage(t('To add a field collection create a field of type field collection on the host entity type.'));
     }
     else {
       $form['#title'] = $this->t('Edit %label field collection', ['%label' => $field_collection->label()]);

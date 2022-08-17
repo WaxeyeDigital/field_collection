@@ -310,7 +310,7 @@ class FieldCollectionItem extends ContentEntityBase implements FieldCollectionIt
       // Add the field collection item to its host.
       if ($create_link) {
         if (_field_collection_field_item_list_full($entity->{$this->bundle()})) {
-          MessengerInterface::addMessage(t('Field is already full.'), 'error');
+          \Drupal::messenger()->addMessage(t('Field is already full.'), 'error');
         }
         else {
           $entity->{$this->bundle()}[] = ['field_collection_item' => $this];

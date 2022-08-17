@@ -85,16 +85,16 @@ class FieldCollectionItemForm extends ContentEntityForm {
       $field_collection_item->save();
       $host->save();
 
-      $messages = MessengerInterface::all();
+      $messages = \Drupal::messenger()->all();
       if (!isset($messages['warning']) && !isset($messages['error'])) {
-        MessengerInterface::addMessage(t('Successfully added a @type.', ['@type' => $field_collection_item->bundle()]));
+        \Drupal::messenger()->addMessage(t('Successfully added a @type.', ['@type' => $field_collection_item->bundle()]));
       }
     }
     else {
-      $messages = MessengerInterface::all();
+      $messages = \Drupal::messenger()->all();
       if (!isset($messages['warning']) && !isset($messages['error'])) {
         $field_collection_item->save();
-        MessengerInterface::addMessage(t('Successfully edited %label.', ['%label' => $field_collection_item->label()]));
+        \Drupal::messenger()->addMessage(t('Successfully edited %label.', ['%label' => $field_collection_item->label()]));
       }
     }
 
@@ -105,7 +105,7 @@ class FieldCollectionItemForm extends ContentEntityForm {
     else {
       // In the unlikely case something went wrong on save, the block will be
       // rebuilt and block form redisplayed.
-      MessengerInterface::addMessage(t('The field collection item could not be saved.'), 'error');
+      \Drupal::messenger()->addMessage(t('The field collection item could not be saved.'), 'error');
 
       $form_state->setRebuild();
     }

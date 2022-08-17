@@ -34,7 +34,7 @@ class FieldCollectionItemController extends ControllerBase {
   public function add(FieldCollection $field_collection, $host_type, $host_id) {
     $host = $this->entityTypeManager()->getStorage($host_type)->load($host_id);
     if (_field_collection_field_item_list_full($host->{$field_collection->id()})) {
-      MessengerInterface::addMessage(t('This field is already full.'), 'error');
+      \Drupal::messenger()->addMessage(t('This field is already full.'), 'error');
       return ['#markup' => 'Can not add to an already full field.'];
     }
     else {

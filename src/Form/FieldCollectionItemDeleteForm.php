@@ -50,7 +50,7 @@ class FieldCollectionItemDeleteForm extends ContentEntityConfirmFormBase {
     $node_type_storage = $this->entityTypeManager->getStorage('field_collection');
     $node_type = $node_type_storage->load($this->entity->bundle())->label();
 
-    MessengerInterface::addMessage(t(
+    \Drupal::messenger()->addMessage(t(
       '@type %id has been deleted.',
       [
         '@type' => $node_type,
