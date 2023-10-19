@@ -20,7 +20,7 @@ class FieldCollectionItemNormalizer extends ComplexDataNormalizer {
   /**
    * {@inheritdoc}
    */
-  public function normalize($field_item, $format = NULL, array $context = []) {
+  public function normalize($field_item, $format = NULL, array $context = []): array|string|int|float|bool|\ArrayObject|NULL {
     // Set the normalized field output to the field collection item.
     $values = $this->serializer->normalize($field_item->getFieldCollectionItem(), $format, $context);
 
