@@ -276,6 +276,7 @@ class FieldCollectionItem extends ContentEntityBase implements FieldCollectionIt
       $entity_info = $this->entityTypeManager()->getDefinition($this->host_type->value, TRUE);
       $host_id_results = \Drupal::entityQuery($entity_info->id())
         ->condition($this->bundle(), $this->id())
+        ->accessCheck(TRUE)
         ->execute();
       $this->host_id = reset($host_id_results);
     }
